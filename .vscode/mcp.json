@@ -1,0 +1,12 @@
+{
+    "servers": {
+        "encore-mcp": {
+            "args": [
+                "mcp",
+                "run",
+                "--app=training-backend-58xi"
+            ],
+            "command": "encore"
+        }
+    }
+}
