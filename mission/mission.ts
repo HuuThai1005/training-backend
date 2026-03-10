@@ -1,10 +1,14 @@
 import { api } from "encore.dev/api";
 
+interface PingResponse {
+  message: string;
+}
+
 export const ping = api(
   { method: "GET", path: "/ping" },
-  async () => {
+  async (): Promise<PingResponse> => {
     return {
-      message: "hello from The Farm",
+      message: "Hello from The Farm",
     };
   }
 );
