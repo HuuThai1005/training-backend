@@ -3,27 +3,33 @@ import { plans } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export const planRepo = {
-    async createPlan(name: string) {
-        const [plan] = await db.insert(plans).values({ name}).returning();
-        return plan;
-    },
+  async createPlan(data: { name: string; workspaceId: string }) {
+    const [plan] = await db.insert(plans).values(data).returning();
+    return plan;
+  },
 
-    async getPlans() {
-        const plan = await db.select().from(plans);
-        return plan;
-    },
+  async getPlans() {
+    return db.select().from(plans);
+  },
 
-    async updatePlan(id: number, newName: string) {
-        const [plan] = await db.update(plans).set({ name: newName }).where(eq(plans.id, id)).returning();
-        return plan;
-    },
+  async updatePlan(id: number, newName: string) {
+    const [plan] = await db
+      .update(plans)
+      .set({ name: newName })
+      .where(eq(plans.id, id))
+      .returning();
 
-    async deletePlan(id: number) {
-        await db.delete(plans).where(eq(plans.id, id));
-    },
+    return plan;
+  },
 
-    async getPlanById(id: number) {
-        const [plan] = await db.select().from(plans).where(eq(plans.id, id));
+  async deletePlan(id: number) {
+    await db.delete(plans).where(eq(plans.id, id));
+  },
+
+    async getPlanById(id: number, workspaceId?: string) {
+        const plan = db.select().from(plans).where(eq(plans.id, id));
         return plan;
     }
-}
+
+
+};

@@ -1,0 +1,1 @@
+ALTER TABLE "plans" ADD COLUMN "workspace_id" uuid NOT NULL;
