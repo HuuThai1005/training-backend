@@ -2,51 +2,52 @@ import { db } from "../db/db";
 import { plans } from "../db/schema";
 import { sql } from "drizzle-orm";
 import { eq } from "drizzle-orm";
+import { requireScope } from "../auth/require.scope";
 
 export const planService = {
+  async getPlans(workspaceId: string, scopes: string[]) {
+    requireScope(scopes, "plans:read");
 
-  async getPlans(workspaceId: string) {
+    return db.transaction(async (tx) => {
+      await tx.execute(
+        sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
+      );
 
-  return db.transaction(async (tx) => {
+      return tx.select().from(plans);
+    });
+  },
 
-    await tx.execute(
-      sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`)
-    );
+  async createPlan(name: string, workspaceId: string, scopes: string[]) {
+    requireScope(scopes, "plans:create");
 
-    return tx.select().from(plans);
-  });
+    if (!name) {
+      throw new Error("EMPTY_NAME");
+    }
 
-},
+    return db.transaction(async (tx) => {
+      await tx.execute(
+        sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
+      );
 
+      const [plan] = await tx
+        .insert(plans)
+        .values({
+          name,
+          workspaceId,
+        })
+        .returning();
 
-  async createPlan(name: string, workspaceId: string) {
+      return plan;
+    });
+  },
 
-  console.log("workspaceId:", workspaceId);
-
-  return db.transaction(async (tx) => {
-
-    await tx.execute(
-  sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`)
-);
-
-    console.log("workspace set");
-
-    const [plan] = await tx
-      .insert(plans)
-      .values({
-        name,
-        workspaceId,
-      })
-      .returning();
-
-    console.log("insert result:", plan);
-
-    return plan;
-  });
-},
-
-
-  async updatePlan(id: number, newName: string, workspaceId: string) {
+  async updatePlan(
+    id: number,
+    newName: string,
+    workspaceId: string,
+    scopes: string[],
+  ) {
+    requireScope(scopes, "plans:update");
 
     if (!newName) {
       throw new Error("EMPTY_NEW_NAME");
@@ -57,15 +58,11 @@ export const planService = {
     }
 
     return db.transaction(async (tx) => {
-
       await tx.execute(
-  sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`)
-);
+        sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
+      );
 
-      const [existing] = await tx
-        .select()
-        .from(plans)
-        .where(eq(plans.id, id));
+      const [existing] = await tx.select().from(plans).where(eq(plans.id, id));
 
       if (!existing) {
         throw new Error("PLAN_NOT_FOUND");
@@ -81,34 +78,27 @@ export const planService = {
     });
   },
 
-
-  async deletePlan(id: number, workspaceId: string) {
+  async deletePlan(id: number, workspaceId: string, scopes: string[]) {
+    requireScope(scopes, "plans:delete");
 
     if (typeof id !== "number" || id <= 0) {
       throw new Error("INVALID_ID");
     }
 
     return db.transaction(async (tx) => {
-
       await tx.execute(
-  sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`)
-);
+        sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
+      );
 
-      const [existing] = await tx
-        .select()
-        .from(plans)
-        .where(eq(plans.id, id));
+      const [existing] = await tx.select().from(plans).where(eq(plans.id, id));
 
       if (!existing) {
         throw new Error("PLAN_NOT_FOUND");
       }
 
-      await tx
-        .delete(plans)
-        .where(eq(plans.id, id));
+      await tx.delete(plans).where(eq(plans.id, id));
 
       return { success: true };
     });
-  }
-
+  },
 };
