@@ -35,8 +35,8 @@ export const updatePlan = api(
   { method: "PUT", path: "/plans/:id" },
   async ({ id, newName, workspaceId }: { id: number; newName: string; workspaceId: string }) => {
     try {
-      await planService.updatePlan(id, newName, workspaceId, ["plans:update"]);
-      return { message: "Updated successfully" };
+      const plan = await planService.updatePlan(id, newName, workspaceId, ["plans:update"]);
+      return { message: "Updated successfully", plan };
     } catch (error: any) {
       if (error.message === "INVALID_ID") {
         return { message: "Plan ID must be a positive integer" };
@@ -58,8 +58,8 @@ export const deletePlan = api(
   { method: "DELETE", path: "/plans/:id" },
   async ({ id, workspaceId }: { id: number; workspaceId: string }) => {
     try {
-      await planService.deletePlan(id, workspaceId, ["plans:delete"]);
-      return { message: "Deleted successfully" };
+      const plan = await planService.deletePlan(id, workspaceId, ["plans:delete"]);
+      return { message: "Deleted successfully", plan };
     } catch (error: any) {
       if (error.message === "INVALID_ID") {
         return { message: "Plan ID must be a positive integer" };
