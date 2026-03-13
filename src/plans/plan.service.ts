@@ -3,6 +3,7 @@ import { plans } from "../db/schema";
 import { sql } from "drizzle-orm";
 import { eq } from "drizzle-orm";
 import { requireScope } from "../auth/require.scope";
+import { planRepo } from "./plan.repo";
 
 export const planService = {
   async getPlans(workspaceId: string, scopes: string[]) {
@@ -13,7 +14,7 @@ export const planService = {
         sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
       );
 
-      return tx.select().from(plans);
+      return planRepo.getPlans();
     });
   },
 
@@ -29,15 +30,8 @@ export const planService = {
         sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
       );
 
-      const [plan] = await tx
-        .insert(plans)
-        .values({
-          name,
-          workspaceId,
-        })
-        .returning();
 
-      return plan;
+      return planRepo.createPlan({ name, workspaceId });
     });
   },
 
@@ -68,13 +62,8 @@ export const planService = {
         throw new Error("PLAN_NOT_FOUND");
       }
 
-      const [plan] = await tx
-        .update(plans)
-        .set({ name: newName })
-        .where(eq(plans.id, id))
-        .returning();
 
-      return plan;
+      return planRepo.updatePlan(id, newName);
     });
   },
 
@@ -96,9 +85,7 @@ export const planService = {
         throw new Error("PLAN_NOT_FOUND");
       }
 
-      await tx.delete(plans).where(eq(plans.id, id));
-
-      return { success: true };
+      return planRepo.deletePlan(id);
     });
   },
 };

@@ -15,6 +15,13 @@
       "when": 1773215255830,
       "tag": "0001_flimsy_husk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773383427318,
+      "tag": "0002_cultured_purple_man",
+      "breakpoints": true
     }
   ]
 }

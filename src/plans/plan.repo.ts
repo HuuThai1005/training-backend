@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 export const planRepo = {
   async createPlan(data: { name: string; workspaceId: string }) {
     const [plan] = await db.insert(plans).values(data).returning();
-    console.log("Created plan:", plan);
     return plan;
 
   },
