@@ -13,19 +13,18 @@ export const createLead = api(
     workspaceId: string;
   }) => {
     try {
-const lead = await leadService.createLead(name, email, workspaceId);
+      const lead = await leadService.createLead(name, email, workspaceId);
 
-    return {
-      message: "Created successfully",
-      data: {
-        id: lead.id,
-        name: lead.name,
-        email: lead.email,
-        workspaceId: lead.workspaceId,
-      },
-    };
-    }
-      catch (error: any) {
+      return {
+        message: "Created successfully",
+        data: {
+          id: lead.id,
+          name: lead.name,
+          email: lead.email,
+          workspaceId: lead.workspaceId,
+        },
+      };
+    } catch (error: any) {
       if (error.message === "EMPTY") {
         return {
           message: "Name and email are required",
@@ -35,7 +34,7 @@ const lead = await leadService.createLead(name, email, workspaceId);
         return {
           message: "Invalid email format",
         };
-      };
+      }
     }
   },
 );
@@ -43,6 +42,19 @@ const lead = await leadService.createLead(name, email, workspaceId);
 export const listLeads = api(
   { method: "GET", path: "/leads" },
   async ({ workspaceId }: { workspaceId: string }) => {
-    return leadService.getLeads(workspaceId);
-  },
+    try {
+      const leads = await leadService.getLeads(workspaceId);
+      return {
+        leads
+      }
+    }
+      
+    catch (error: any) {      
+      if (error.message === "EMPTY") {
+        return {
+          message: "Workspace ID is required",
+        };
+      }
+    }
+  }
 );
