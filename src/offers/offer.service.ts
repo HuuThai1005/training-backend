@@ -1,9 +1,11 @@
 import { sql } from "drizzle-orm";
 import { db } from "../db/db";
 import { offerRepo } from "./offer.repo";
+import { requireScope } from "../auth/require.scope";
 
 export const offerService = {
-    async createOffer(applicationId: string, salary: number, workspaceId: string) {
+    async createOffer(applicationId: string, salary: number, workspaceId: string, scopes: string[]) {
+        requireScope(scopes, "offers:create");
         return db.transaction(async (tx) => {
             await tx.execute(
                 sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
@@ -18,7 +20,8 @@ export const offerService = {
         })
     },
 
-    async getOffers(workspaceId: string) {
+    async getOffers(workspaceId: string, scopes: string[]) {
+        requireScope(scopes, "offers:read");
         return db.transaction(async (tx) => {
             await tx.execute(
                 sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),

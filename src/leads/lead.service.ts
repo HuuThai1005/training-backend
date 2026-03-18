@@ -1,9 +1,11 @@
 import { db } from "../db/db";
 import { sql } from "drizzle-orm";
 import { leadRepo } from "./lead.repo";
+import { requireScope } from "../auth/require.scope";
 
 export const leadService = {
-  async createLead(name: string, email: string, workspaceId: string) {
+  async createLead(name: string, email: string, workspaceId: string, scopes: string[]) {
+    requireScope(scopes, "leads:create");
     return db.transaction(async (tx) => {
         await tx.execute(
           sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
@@ -20,7 +22,8 @@ export const leadService = {
     });
   },
 
-  async getLeads(workspaceId: string) {
+  async getLeads(workspaceId: string, scopes: string[]) {
+    requireScope(scopes, "leads:read");
     return db.transaction(async (tx) => {
       await tx.execute(
         sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),

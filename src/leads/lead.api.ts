@@ -13,7 +13,7 @@ export const createLead = api(
     workspaceId: string;
   }) => {
     try {
-      const lead = await leadService.createLead(name, email, workspaceId);
+      const lead = await leadService.createLead(name, email, workspaceId, ["leads:create"]);
 
       return {
         message: "Created successfully",
@@ -35,6 +35,9 @@ export const createLead = api(
           message: "Invalid email format",
         };
       }
+      if (error.message === "FORBIDDEN") {
+        return { message: "You do not have permission to create leads" };
+      }
     }
   },
 );
@@ -43,7 +46,7 @@ export const listLeads = api(
   { method: "GET", path: "/leads" },
   async ({ workspaceId }: { workspaceId: string }) => {
     try {
-      const leads = await leadService.getLeads(workspaceId);
+      const leads = await leadService.getLeads(workspaceId, ["leads:read"]);
       return {
         leads
       }
@@ -54,6 +57,9 @@ export const listLeads = api(
         return {
           message: "Workspace ID is required",
         };
+      }
+      if (error.message === "FORBIDDEN") {
+        return { message: "You do not have permission to read leads" };
       }
     }
   }
