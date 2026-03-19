@@ -1,4 +1,4 @@
-import { pgTable, serial, text, uuid, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, uuid, integer, timestamp } from "drizzle-orm/pg-core";
 
 export const plans = pgTable("plans", {
   id: serial("id").primaryKey(),
@@ -42,4 +42,12 @@ export const offers = pgTable("offers", {
   salary: integer("salary").notNull(),
 
   workspaceId: uuid("workspace_id").notNull()
+});
+
+export const quote_analytics = pgTable("quote_analytics", {
+  id: serial("id").primaryKey(),
+  workspaceId: uuid("workspace_id").notNull(),
+  leadId : integer("lead_id").notNull(),
+  eventType: text("event_type").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
