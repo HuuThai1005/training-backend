@@ -7,8 +7,8 @@ export const sendEvent = api(
     await eventBus.publish({
       type: "Quote.Sent",
       data: {
-        workspaceId: "11111111-1111-1111-1111-111111111111",
-        leadId: 999,
+        workspaceId: "22222222-2222-2222-2222-222222222222",
+        leadId: 8,
       },
     });
 

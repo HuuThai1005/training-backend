@@ -51,3 +51,12 @@ export const quote_analytics = pgTable("quote_analytics", {
   eventType: text("event_type").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  workspaceId: uuid("workspace_id").notNull(),
+  action: text("action").notNull(),
+  entity: text("entity").notNull(),
+  entityId: integer("entity_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});

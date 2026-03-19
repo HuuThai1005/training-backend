@@ -13,42 +13,40 @@ export const leadService = {
     scopes: string[],
   ) {
     requireScope(scopes, "leads:create");
-    return db.transaction(async (tx) => {
-      await tx.execute(
-        sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
-      );
-      if (!name || !email) {
-        throw new Error("EMPTY");
-      }
 
-      if (!/\S+@\S+\.\S+/.test(email)) {
-        throw new Error("INVALID_FORMAT_EMAIL");
-      }
+    const lead = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`SELECT set_config('app.workspace_id', ${workspaceId}, true)`,
+      );
 
       const lead = await leadRepo.createLead(tx, { name, email, workspaceId });
 
-      await eventBus.publish({
-        type: "Lead.Created",
-        data: {
-          id: lead.id,
-          email: lead.email,
-          workspaceId: lead.workspaceId,
-        },
-      });
-      
-
       return lead;
     });
+
+    await eventBus.publish({
+      type: "Lead.Created",
+      data: {
+        id: lead.id,
+        email: lead.email,
+        workspaceId: lead.workspaceId,
+      },
+    });
+
+    return lead;
   },
 
   async getLeads(workspaceId: string, scopes: string[]) {
     requireScope(scopes, "leads:read");
+
     return db.transaction(async (tx) => {
-      await tx.execute(
-        sql.raw(`SET LOCAL app.workspace_id = '${workspaceId}'`),
+      const check = await tx.execute(
+        sql`SELECT set_config('app.workspace_id', ${workspaceId}, true)`,
       );
 
-      return leadRepo.getLead(tx);
+      const leads = await leadRepo.getLead(tx);
+
+      return leads;
     });
   },
 };
