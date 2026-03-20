@@ -1,0 +1,22 @@
+name: Deploy Encore App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Encore
+        run: |
+          curl -L https://encore.dev/install.sh | bash
+
+      - name: Deploy
+        run: |
+          encore deploy --env=prod
