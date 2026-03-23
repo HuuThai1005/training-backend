@@ -1,6 +1,7 @@
 import { db } from "../db/db";
 import { sql } from "drizzle-orm";
 import { statsRepo } from "./stats.repo";
+import { logger } from "../observability/logger";
 
 export const statsService = {
 
@@ -12,10 +13,10 @@ export const statsService = {
       );
 
       const leads = await statsRepo.getLeads(tx);
-      console.log("LEADS:", leads); 
+      logger.info("LEADS DATA: ", leads)
 
       const quotes = await statsRepo.getQuotes(tx);
-      console.log("QUOTES:", quotes); 
+      logger.info("QUOTES DATA: ", quotes) 
 
       const totalLeads = leads.length;
 

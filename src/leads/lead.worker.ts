@@ -16,7 +16,6 @@ eventBus.subscribe(
       console.log("WORKER RECEIVED: Quote.Sent");
       console.log("Lead ID:", data.leadId);
       console.log("Workspace:", data.workspaceId);
-      console.log("DB:", process.env.DATABASE_URL);
 
       const [result] = await db
         .insert(quote_analytics)

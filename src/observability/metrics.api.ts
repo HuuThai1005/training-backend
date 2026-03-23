@@ -6,5 +6,6 @@ export const getMetrics = api ({
     return {
         uptime: process.uptime(),
         memory: process.memoryUsage(),
+        timestamp: new Date(),
     }
 })
