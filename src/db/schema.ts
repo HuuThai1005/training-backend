@@ -1,4 +1,4 @@
-import { pgTable, serial, text, uuid, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, uuid, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
 
 export const plans = pgTable("plans", {
   id: serial("id").primaryKey(),
@@ -58,5 +58,12 @@ export const auditLogs = pgTable("audit_logs", {
   action: text("action").notNull(),
   entity: text("entity").notNull(),
   entityId: integer("entity_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insights = pgTable("insights", {
+  id: serial("id").primaryKey(),
+  workspacesId: uuid("workspace_id").notNull(),
+  content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });

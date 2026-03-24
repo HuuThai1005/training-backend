@@ -40,7 +40,7 @@ export const leadService = {
     requireScope(scopes, "leads:read");
 
     return db.transaction(async (tx) => {
-      const check = await tx.execute(
+      await tx.execute(
         sql`SELECT set_config('app.workspace_id', ${workspaceId}, true)`,
       );
 
